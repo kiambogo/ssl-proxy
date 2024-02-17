@@ -1,0 +1,18 @@
+[req]
+default_bits       = 2048
+default_keyfile    = client.key
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+prompt             = no
+ca                 = ca.crt
+
+[req_distinguished_name]
+C  = CA
+ST = BC
+CN = client
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = client
