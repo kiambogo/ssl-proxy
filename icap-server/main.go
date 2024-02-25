@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-icap/icap"
 )
@@ -38,7 +39,9 @@ func logReq(w icap.ResponseWriter, req *icap.Request) {
 		log.Printf("ICAP Request received:\n\tURL: %s\n\tMethod: %s\n\tHeaders: %v\n", req.URL.String(), req.Method, req.Header)
 		log.Printf("Request received:\n\tURL: %s\n\tMethod: %s\n\tHeaders: %v\n", req.Request.URL.String(), req.Request.Method, req.Request.Header)
 
-		req.Request.Header.Set("Authorization", "Bearer <GITHUB TOKEN>")
+		token := os.Getenv("GITHUB_TOKEN")
+
+		req.Request.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 
 		log.Printf("Request modified:\n\tURL: %s\n\tMethod: %s\n\tHeaders: %v\n", req.Request.URL.String(), req.Request.Method, req.Request.Header)
 

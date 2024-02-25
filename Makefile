@@ -37,7 +37,7 @@ build-squid:
 	@echo "✅ $(GREEN)squid built$(RESET)"
 
 build-icap-server:
-	@docker build -t docker-icap-server ./icap-server 2>/dev/null
+	@docker build -t icap-server ./icap-server 2>/dev/null
 	@echo "✅ $(GREEN)icap-server built$(RESET)"
 
 kube-deploy: check-minikube
@@ -61,11 +61,6 @@ gen-ca-cert: check-minikube
 	@echo "✅ $(GREEN)CA cert added + trusted$(RESET)"
 
 gen-server-cert: check-minikube check-ca-cert
-	@if [ ! -f certs/ca.crt ]; then \
-		echo "❌ $(RED)certs/ca.crt not found$(RESET)"; \
-		echo "❌ $(RED)Please run make gen-ca-cert$(RESET)"; \
-		exit 1; \
-	fi
 	@openssl req -newkey rsa:4096 -nodes -keyout certs/server.key -out certs/server.csr -config certs/server.cnf 2>/dev/null
 	@openssl x509 -req -in certs/server.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/server.crt -extensions req_ext -extfile certs/server.cnf 2>/dev/null
 	-@kubectl delete configmap server-certs >/dev/null || true
@@ -73,11 +68,6 @@ gen-server-cert: check-minikube check-ca-cert
 	@echo "✅ $(GREEN)server-certs created$(RESET)"
 
 gen-client-cert: check-ca-cert
-	@if [ ! -f ca.crt ]; then \
-		echo "❌ $(RED)ca.crt not found$(RESET)"; \
-		echo "❌ $(RED)Please run make gen-ca-cert$(RESET)"; \
-		exit 1; \
-	fi
 	@openssl req -newkey rsa:4096 -nodes -keyout certs/client.key -out certs/client.csr -config certs/client.cnf 2>/dev/null
 	@openssl x509 -req -in certs/client.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/client.crt -extensions req_ext -extfile certs/client.cnf 2>/dev/null
 	@echo "✅ $(GREEN)client-certs created$(RESET)"
