@@ -20,13 +20,20 @@ See https://www.elastic.co/guide/en/elasticsearch/reference/7.17/trb-security-ma
 1. Run `eval $$(minikube docker-env)` to set your current shell to use minikube's local docker registry.
 2. Run `make build-squid` to build a Docker image to the local registry.
 
+### Update and build the ICAP server
+
+1. Run `eval $$(minikube docker-env)` to set your current shell to use minikube's local docker registry.
+2. Run `make build-icap-server` to compile and publish a Docker image with the 
+
 ### Generate root CA cert, client and server certificates.
 
 1. Run `eval $$(minikube docker-env)` to set your current shell to use minikube's local docker registry.
-2. Run `make gen-certs` to generate a root CA, server, and client certificates. The server cert is used by Envoy during the mTLS handshake, and the CA cert is used by Squid to issue adhoc certs as part of the SSL bump procedure.
-3. 
+2. Run `make gen-certs` to generate a root CA, server, and client certificates. The server cert is used by Envoy during the mTLS handshake, and the CA cert is used by Squid to issue adhoc certs as part of the SSL bump procedure. 
 
 ### Deploy the infrastructure
+
+(Optional, but for this example to work) Insert your GitHub developer API key in the [ICAP server env vars](https://github.com/kiambogo/ssl-proxy/blob/main/deploy/kubernetes.yaml#L61).
+
 
 1. Run `make kube-deploy` to apply the Kubernetes resources which include a deployment with:
   - Envoy container
