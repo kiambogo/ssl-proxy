@@ -1,6 +1,6 @@
 # Overview
 
-This provides an example of how using tools like Envoy and Squid can allow for SSL traffic to be terminated, inspected, and modified through an explicit (non-transparent) proxy. 
+This provides an example of how using tools like Envoy and Squid can allow for SSL traffic to be terminated, inspected, logged/audited (with caller identity), and modified through an explicit (non-transparent) proxy. 
 
 Envoy is used for mTLS termination, Squid for its SSL-bump functionality.
 
