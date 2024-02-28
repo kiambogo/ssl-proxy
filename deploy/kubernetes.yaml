@@ -111,6 +111,9 @@ data:
     logformat combinedjson { "message": "%ts.%03tu %6tr %>a %Ss/%03>Hs %<st %"rm %"ru %"un %Sh/%<a %mt", "httpRequest": { "requestMethod": "%"rm", "requestUrl": "%"ru", "requestSize": "%>st", "status": "%>Hs", "responseSize": "%<st", "userAgent": "%"{User-Agent}>h", "remoteIp": "%"{X-Real-IP}>h", "serverIp": "%<a", "latency": "%<ttms", "protocol": "HTTP/%rv" }, "client_device_serial": "%"un", "request_status": "%Ss", "hierarchy_status": "%Sh" }
     access_log /var/log/squid/access.log combinedjson
 
+    # Launch the auth processes that will be used to handle the user auth flow
+    # In this case, the auth process always returns "OK" as all we care about is
+    # knowing the identity of the caller rather than actually setting up a allow/deny list of users.
     auth_param basic program /sbin/null-auth.sh
     auth_param basic children 5 startup=5 idle=1
     auth_param basic credentialsttl 5 hours
@@ -127,24 +130,28 @@ data:
     http_access deny CONNECT !ssl_ports
 
     http_access allow authenticatedusers
-
     http_access allow manager all
     http_access allow all
 
     # Don't perform any caching whatsoever
     cache deny all
 
+    # Bump all connections.
+    # Stare at step 1 to validate SSL/CONNECT request before bumping.
     acl step1 at_step SslBump1
-    ssl_bump peek step1
+    ssl_bump stare step1
     ssl_bump bump all
 
     sslcrtd_program /usr/lib/squid/security_file_certgen -s /var/lib/squid/ssl_db -M 4MB
     sslcrtd_children 5
 
+    # Enable an ICAP server which can perform content adaptation on all requests
     icap_enable          on
     icap_service auditor reqmod_precache icap://127.0.0.1:1344/ bypass=off
+    # Use a custom HTTP header for passing the client identity on
     icap_client_username_header Client-Identity
     adaptation_send_username on
+    # Don't forward CONNECT requests to the ICAP server
     adaptation_access auditor deny CONNECT
     adaptation_access auditor allow all
 
