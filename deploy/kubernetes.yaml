@@ -139,6 +139,9 @@ data:
     # Bump all connections.
     # Stare at step 1 to validate SSL/CONNECT request before bumping.
     acl step1 at_step SslBump1
+    # Peek: Squid forward's the client hello to the upstream server intact
+    # Stare: Squid sends IT'S hello to the upstream server
+    # We choose stare here because we always intend to bump (not splice)
     ssl_bump stare step1
     ssl_bump bump all
 
