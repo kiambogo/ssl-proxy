@@ -9,6 +9,7 @@ help:
 	@echo "� $(GREEN)make build-squid$(RESET) - Build the docker image for the squid proxy"
 	@echo "� $(GREEN)make build-icap-server$(RESET) - Build the docker image for the ICAP server"
 	@echo "� $(GREEN)make kube-deploy$(RESET) - Deploy the squid and icap-server to minikube"
+	@echo "� $(GREEN)make kube-clean$(RESET) - Delete the squid and icap-server from minikube"
 	@echo "� $(GREEN)make gen-certs$(RESET) - Generate the certificates for squid and icap-server"
 	@echo "� $(GREEN)make gen-ca-cert$(RESET) - Generate the CA certificate"
 	@echo "� $(GREEN)make gen-server-cert$(RESET) - Generate the server certificate"
@@ -43,6 +44,10 @@ build-icap-server:
 kube-deploy: check-minikube
 	@kubectl apply -f deploy >/dev/null
 	@echo "✅ $(GREEN)ssl-proxy stack deployed$(RESET)"
+
+kube-clean: check-minikube
+	-@kubectl delete -f deploy 2>/dev/null || true
+	@echo "✅ $(GREEN)ssl-proxy stack deleted$(RESET)"
 
 clean-certs:
 	-@sudo security delete-certificate -c ssl-proxy-ca 2>/dev/null || true
